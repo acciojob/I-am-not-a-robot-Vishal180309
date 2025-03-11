@@ -1,18 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>I'm not a robot</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <main>
-      <!-- solution start -->
-      
-      <!-- solution end -->
-    </main>
-    <script src="./script.js"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        #verify, #reset {
+            display: none;
+            margin: 5px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h3 id="h">Please click on the identical tiles to verify that you are not a robot.</h3>
+    <div class="container" id="imageContainer"></div>
+    <div class="buttons">
+        <button id="verify">Verify</button>
+        <button id="reset">Reset</button>
+    </div>
+    <p id="para"></p>
+    <script>
+        const imagePaths = [
+            'img1.jpg', 'img2.jpg', 'img3.jpg', 'img4.jpg', 'img5.jpg'
+        ];
+        let selectedImages = [];
+        let shuffledImages = [];
+        
+        function shuffleImages() {
+            const duplicateIndex = Math.floor(Math.random() * imagePaths.length);
+            shuffledImages = [...imagePaths, imagePaths[duplicateIndex]];
+            shuffledImages.sort(() => Math.random() - 0.5);
+            displayImages();
+        }
+        
+        function displayImages() {
+            const container = document.getElementById("imageContainer");
+            container.innerHTML = "";
+            shuffledImages.forEach((src, index) => {
+                const img = document.createElement("img");
+                img.src = src;
+                img.dataset.index = index;
+                img.onclick = () => selectImage(img, src);
+                container.appendChild(img);
+            });
+        }
+        
+        function selectImage(img, src) {
+            if (selectedImages.length < 2 && !img.classList.contains("selected")) {
+                img.classList.add("selected");
+                selectedImages.push({ img, src });
+                document.getElementById("reset").style.display = "inline";
+            }
+            if (selectedImages.length === 2) {
+                document.getElementById("verify").style.display = "inline";
+            }
+        }
+        
+        document.getElementById("reset").onclick = function() {
+            selectedImages.forEach(({ img }) => img.classList.remove("selected"));
+            selectedImages = [];
+            document.getElementById("verify").style.display = "none";
+            document.getElementById("reset").style.display = "none";
+            document.getElementById("para").innerText = "";
+        };
+        
+        document.getElementById("verify").onclick = function() {
+            const [first, second] = selectedImages;
+            if (first.src === second.src) {
+                document.getElementById("para").innerText = "You are a human. Congratulations!";
+            } else {
+                document.getElementById("para").innerText = "We can't verify you as a human. You selected the non-identical tiles.";
+            }
+            document.getElementById("verify").style.display = "none";
+        };
+        
+        shuffleImages();
+    </script>
+</body>
 </html>
